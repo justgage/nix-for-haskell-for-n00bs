@@ -1,15 +1,16 @@
-# A Haskell + Nix tutorial __  for Haskell and Nix noobs (ALPHA) __
+# A Haskell + Nix tutorial _for Haskell and Nix noobs (ALPHA)_
 
 NOTE: I'm very, very new to Haskell. It's a feature. 
 
 ## Why Not Cabal?
 
-Let's talk about Cabal. Cabal is great and all for a build system but as a package manager it's well.. bad, maybe becauese [it's not a package mannager](https://ivanmiljenovic.wordpress.com/2010/03/15/repeat-after-me-cabal-is-not-a-package-manager/). Cabal is known for :fire: **Cabal Hell** :fire:  where you get your packages in a state that's broken and very hard to fix manually. This is, to put it lightly, annoying and unbecoming of a package manager written in a language with such a central focus on _purity_ and _correctness_. 
+Let's talk about Cabal. Cabal is great and all for a build system but as a package manager it's well.. bad, maybe because [it's not a package mannager](https://ivanmiljenovic.wordpress.com/2010/03/15/repeat-after-me-cabal-is-not-a-package-manager/). Cabal is known for :fire: **Cabal Hell** :fire:  where you get your packages in a state that's broken and very hard to fix manually. This is, to put it lightly, annoying and unbecoming of a package manager written in a language with such a central focus on _purity_ and _correctness_. 
 
 I was quite shocked and annoyed when I went to `cabal install` _the most popular haskell frameworks and libraries_ such as http://www.yesodweb.com/ and they **don't work!**. This is mainly because versions are off and the current versions that you have previously `cabal install`'d don't play nice together (to over simplify it). While this can sort of be fixed by `cabal sandbox` this is less than ideal because it wastes space like crazy, and again doesn't always work. __Nix to the resue!__.
 
-## Why Nix.
-This is not somthing I'm currently going to write about but Nix is cool because unlike most package mannagers that are based around mutating a global store of packages that all depend on each other it's based around a delcaritive file that spesifies the dependencies and then builds all the things that are in it and uninstalls all the stuff that is not. And this is per project if your doing what I'm going to do in this tutorial.
+## Why Nix
+
+This is not something I'm going to cover in depth but Nix is better because unlike most package managers that are based around **mutating** a global store of packages that all depend on each other it's based around a declarative file that specifies the dependencies and then builds all the things that are in it and uninstalls all the stuff that is not (cabal doesn't have a way to uninstall packages besides deleting and building again from source). And this is per project if your doing what I'm going to do in this tutorial.
 
 Other (better) arguments:
 

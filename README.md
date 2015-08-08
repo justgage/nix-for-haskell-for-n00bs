@@ -31,15 +31,15 @@ To make a simple project cabal file:
 Let's see how this `nix-shell` thing works:
 
 In my normal terminal I have Ruby in the path (just an example, no Ruby has nothing to do with this tutorial).
-``
+```
 $ ruby -v
 ruby 2.2.2p95 (2015-04-13 revision 50295) [x86_64-linux]
 
-``
+```
 
 however when I run nix-shell with the pure option:
 
-``
+```
 $ nix-shell --pure
 
 [nix-shell:~/nix-haskell]$ ruby -v
@@ -49,33 +49,33 @@ bash: ruby: command not found...
 [nix-shell:~/nix-haskell]$ ghci --version
 The Glorious Glasgow Haskell Compilation System, version 7.10.1
 
-``
+```
 Ruby isn't found because we used the `--pure` option which strips out our path. However our "Glorious" Haskell compiler is! (because it was in the `shell.nix` file)
 
 **NOTE:** this is _not_ a sandbox. This still lets you do anything to your file system. It simply modifies your "Path" and other env variables.
 
-# Adding a dependency to `lens`
+# Adding a dependency, `lens`
 
 Adding a haskell library dependency is pretty easy just edit your `whatever.cabal` file and add something to the `build-depens` part.
 
 from:
-``
+```
   build-depends:       base >=4.8 && <4.9
-``
+```
 to:
-``
+```
   build-depends:       base >=4.8 && <4.9, lens >= 1
-``
+```
 
 Now I'm going to add this to a separate `shell.nix` to preserve the old environment.
 
-``
+```
 $ cabal2nix --shell ./. > shell2.nix
-``
+```
 
 Next we'll run the nix-shell with it:
 
-``
+```
 $ nix-shell shell2.nix
 
 ... probably a lot of crazy output while it loads things ...
@@ -84,7 +84,7 @@ $ nix-shell shell2.nix
 Prelude> import Control.Lens
 Prelude Control.Lens> 
 
-``
+```
 
 Tada! `lens` is magically in the scope now!
 

@@ -59,12 +59,16 @@ Ruby isn't found because we used the `--pure` option which strips out our path. 
 Adding a haskell library dependency is pretty easy just edit your `whatever.cabal` file and add something to the `build-depens` part.
 
 from:
-```
+```cabal
+executable first-haskell-nix
+-- ... 
   build-depends:       base >=4.8 && <4.9
 ```
 to:
-```
-  build-depends:       base >=4.8 && <4.9, lens >= 1
+```cabal
+executable first-haskell-nix
+-- ... 
+  build-depends:       base >=4.8 && <4.9, lens >= 0
 ```
 
 Now I'm going to add this to a separate `shell.nix` to preserve the old environment.
@@ -90,15 +94,87 @@ Tada! `lens` is magically in the scope now!
 
 If you run `nix-shell` (which by default will load `shell.nix` and try the same thing you can verify that `lens` is no longer in the scope.
 
-# To be continued...
+# Using and Building the project
 
-Things I'm going to write next:
+I'm going to add a dependency to `wreq` which is a nice little HTTP client for interacting with things like Twitter or any RESTfull api.
 
-- How to build a project
+```
+  build-depends:       base >=4.8 && <4.9,
+                       lens >= 0,
+                       wreq == 0.4.0.0
+```
+
+I'm using the latest I found on the [hackage repo](https://hackage.haskell.org/package/wreq).
+
+
+We'll do the dance to regenerate the shell.nix, I'm going to call mine `shell-wreq.nix`.
+
+```
+cabal2nix --shell > shell-wreq.nix
+```
+
+
+I'm going to change `Main.hs` to:
+
+```haskell
+{-# LANGUAGE OverloadedStrings #-}
+
+import Control.Lens
+import Network.Wreq
+import qualified Network.Wreq.Session as S
+
+main :: IO ()
+main = S.withSession $ \sess -> do
+  -- First request: tell the server to set a cookie
+  S.get sess "http://httpbin.org/cookies/set?name=hi"
+
+  -- Second request: the cookie should still be set afterwards.
+  r <- S.post sess "http://httpbin.org/post" ["a" := (3 :: Int)]
+  print $ r ^. responseCookie "name" . cookieValue
+```
+
+While this is a little crazy the main point that it will work.
+
+Next we'll build it.
+
+```
+$ nix-shell shell-wreq.nix
+
+
+.... lots of downloading ....
+
+[nix-shell:~/code/haskell/nix-for-haskell-for-n00bs]$ cabal configure
+
+[nix-shell:~/code/haskell/nix-for-haskell-for-n00bs]$ cabal build
+./first-haskell-nix.cabal has been changed. Re-configuring with most recently
+used options. If this fails, please run configure manually.
+Warning: The package list for 'hackage.haskell.org' is 19.2 days old.
+Run 'cabal update' to get the latest list of available packages.
+Resolving dependencies...
+Configuring first-haskell-nix-0.1.0.0...
+Warning: The 'license-file' field refers to the file 'LICENSE' which does not
+exist.
+Building first-haskell-nix-0.1.0.0...
+Preprocessing executable 'first-haskell-nix' for first-haskell-nix-0.1.0.0...
+[1 of 1] Compiling Main             ( Main.hs, dist/build/first-haskell-nix/first-haskell-nix-tmp/Main.o )
+Linking dist/build/first-haskell-nix/first-haskell-nix ...
+```
+
+Now the binary will be deep inside of your dist folder. You can run it like so:
+
+```
+[nix-shell:~/code/haskell/nix-for-haskell-for-n00bs]$ ./dist/build/first-haskell-nix/first-haskell-nix
+"hi"
+```
+
+Tada! we got back the response we expected!
+
+Please anyone who can't get this working please make an issue in this repo.
 
 # Notes:
-- NEVER run `cabal install` or anything of the like, that's what Nix is for
+- NEVER run `cabal install` or anything of the like, that's what Nix is going to handle that portion of it and if you do you'll get a weird path.
 
 # Resources
   Blogs are great and all but the real up to date stuff should be at: https://nixos.org/nixpkgs/manual/#users-guide-to-the-haskell-infrastructure
+
 

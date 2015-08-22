@@ -47,9 +47,9 @@ Take a moment to enjoy the feeling of _Zen._
 ## 2. Setting up a simple project
 
 ```bash
-cabal init                      # And fill out the information that you like (or possibly just clone this repo)
+cabal init # And fill out the information that you like (or possibly just clone this repo)
 cabal2nix --shell . > shell.nix # To generate a nix version of your dependencies
-nix-shell                       # This will put you into a nix-shell with GHC version you spesifed in your path
+nix-shell # This will put you into a nix-shell with GHC version you spesifed in your path
 ```
 
 ### nix-shell in a nutshell
@@ -77,6 +77,7 @@ The Glorious Glasgow Haskell Compilation System, version 7.10.1
 Ruby isn't found because we used the `--pure` option which strips out our path. However our "Glorious" Haskell compiler is! (because it was in the `shell.nix` file)
 
 **NOTE:** this is _not_ a sandbox. This still lets you do anything to your file system. It simply modifies your "Path" and other env variables.
+
 **NOTE:** you can't use the pure option in building your project unless you add cabal to your `shell.nix` which I currently don't know how to do
 
 
